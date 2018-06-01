@@ -16,7 +16,7 @@
     yVelocity: 0,
     gravity: GRAVITY,
   }
-  const platforms = [
+  let platforms = [
     {
       x: 0,
       y: 350,
@@ -99,6 +99,13 @@
   }
 
   function createPlatform() {
+    platforms = platforms.filter(function(platform) { 
+      if (platform.x + platform.width >= 0) {
+        return true;
+      }
+      score++;
+      return false;
+    });
     if (platforms.length > 10) {
       return;
     }
@@ -109,14 +116,6 @@
       width: getRandomNumber(CANVAS_WIDTH/10, CANVAS_WIDTH),
       height: 200,
     });
-    for (let i = platforms.length -1; i >= 0 ; i--){
-      if((platforms[i].x + platforms[i].width) < 0){
-        platforms.splice(i, 1);
-        score++;
-        // TODO track score by landing rather than this
-        // TODO this isn't splicing
-      }
-    }
   }
 
   function keydownHandler() {
