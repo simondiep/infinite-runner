@@ -1,0 +1,147 @@
+<script>
+  const CANVAS_HEIGHT = 480;
+  const CANVAS_WIDTH  = 640;
+  let context;
+  let score = 0;
+  const GRAVITY = 0.5;
+  const SCROLL_SPEED = 5;
+  const START_X = 100;
+  const START_Y = 100;
+  const player = {
+    x: START_X,
+    y: START_Y,
+    width: 30,
+    height: 50,
+    jumpPower: 10,
+    yVelocity: 0,
+    gravity: GRAVITY,
+  }
+  const platforms = [
+    {
+      x: 0,
+      y: 350,
+      width: CANVAS_WIDTH,
+      height: 200,
+    },
+  ];
+
+  window.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
+    document.body.appendChild(canvas);
+    context = canvas.getContext('2d');
+    window.addEventListener('keydown', keydownHandler);
+    window.addEventListener('keyup', keyupHandler);
+    setInterval(
+      () => requestAnimationFrame(update),
+      1000/30, // 30 fps
+    )
+    // Create a new platform every half second
+    setInterval(
+      createPlatform,
+      500,
+    )
+  }
+
+  function update() {
+    document.getElementById('scoreLabel').innerHTML = score;
+    context.fillStyle = 'black';
+    context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    
+    for (const platform of platforms) {
+      context.fillStyle = 'gray';
+      context.fillRect(platform.x, platform.y, platform.width, platform.height);
+    }
+    player.y = player.y + player.yVelocity;
+    if (!isPlayerOnPlatform()) {
+      player.yVelocity += player.gravity;
+    }
+    context.fillStyle = 'green';
+    context.fillRect(player.x, player.y, player.width, player.height);
+    for (const platform of platforms) {
+      platform.x -= SCROLL_SPEED;
+    }
+    // Lose condition
+    if (player.y > CANVAS_HEIGHT || didPlayerHitSideOfPlatform()) {
+      context.fillStyle = 'red';
+      score = 0;
+      context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      player.x = START_X;
+      player.y = START_Y;
+      player.yVelocity = 0;
+    }
+  }
+
+  function isPlayerOnPlatform() {
+    for (const platform of platforms) {
+      const isPlatformUnderneathPlayer = (platform.x + platform.width) > player.x && platform.x < player.x;
+      const isStandingStill = (player.y + player.height) >= platform.y;
+      if (isPlatformUnderneathPlayer && isStandingStill) {
+        player.y = platform.y - player.height;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function didPlayerHitSideOfPlatform() {
+    for (const platform of platforms) {
+      if (player.x + player.width === platform.x &&
+        player.y + player.height > platform.y) {
+        return true;
+      }
+    }
+    return false;
+  }
+  function getRandomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function createPlatform() {
+    if (platforms.length > 10) {
+      return;
+    }
+    const lastPlatform = platforms[platforms.length - 1];
+    platforms.push({
+      x: lastPlatform.x + lastPlatform.width + getRandomNumber(10 * player.jumpPower, 20 * player.jumpPower),
+      y: lastPlatform.y + getRandomNumber(player.jumpPower*(-1), player.jumpPower),
+      width: getRandomNumber(CANVAS_WIDTH/10, CANVAS_WIDTH),
+      height: 200,
+    });
+    for (let i = platforms.length -1; i >= 0 ; i--){
+      if((platforms[i].x + platforms[i].width) < 0){
+        platforms.splice(i, 1);
+        score++;
+        // TODO track score by landing rather than this
+        // TODO this isn't splicing
+      }
+    }
+  }
+
+  function keydownHandler() {
+    switch (event.keyCode) {
+      case 32: //Space
+        // Only allow jumping from ground
+        if (isPlayerOnPlatform()) {
+          player.yVelocity = -player.jumpPower;
+          break;
+        }
+    }
+  }
+  function keyupHandler() {
+    switch (event.keyCode) {
+      case 32: //Space
+        // Allow for small or large jumps based on time held
+        // Prevents double jumps
+        if (player.yVelocity < -player.jumpPower/2) {
+          player.yVelocity = -player.jumpPower/2;
+          break;
+        }
+    }
+  }
+</script>
+<div>
+  Score:
+  <div id="scoreLabel" style="display:inline-block"></div>
+</div>
