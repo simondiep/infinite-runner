@@ -3,8 +3,9 @@
   const CANVAS_WIDTH  = 640;
   let context;
   let score = 0;
+  let highScore = 0;
   const GRAVITY = 0.5;
-  const SCROLL_SPEED = 5;
+  const SCROLL_SPEED = 10;
   const START_X = 100;
   const START_Y = 100;
   const player = {
@@ -12,7 +13,7 @@
     y: START_Y,
     width: 30,
     height: 50,
-    jumpPower: 10,
+    jumpPower: 14,
     yVelocity: 0,
     gravity: GRAVITY,
   }
@@ -35,37 +36,40 @@
     window.addEventListener('keyup', keyupHandler);
     setInterval(
       () => requestAnimationFrame(update),
-      1000/30, // 30 fps
+      1000/60, // 60 fps
     )
     // Create a new platform every half second
+    createPlatform();
     setInterval(
       createPlatform,
-      500,
+      250,
     )
   }
 
   function update() {
-    document.getElementById('scoreLabel').innerHTML = score;
-    context.fillStyle = 'black';
+    context.fillStyle = 'lightblue';
     context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     
     for (const platform of platforms) {
-      context.fillStyle = 'gray';
+      platform.x -= SCROLL_SPEED;
+      context.fillStyle = 'green';
       context.fillRect(platform.x, platform.y, platform.width, platform.height);
     }
     player.y = player.y + player.yVelocity;
     if (!isPlayerOnPlatform()) {
       player.yVelocity += player.gravity;
     }
-    context.fillStyle = 'green';
+    context.fillStyle = 'brown';
     context.fillRect(player.x, player.y, player.width, player.height);
-    for (const platform of platforms) {
-      platform.x -= SCROLL_SPEED;
-    }
+
     // Lose condition
     if (player.y > CANVAS_HEIGHT || didPlayerHitSideOfPlatform()) {
-      context.fillStyle = 'red';
+      if (score > highScore) {
+        highScore = score;
+        document.getElementById('highScoreLabel').innerHTML = highScore;
+      }
       score = 0;
+      context.fillStyle = 'red';
       context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       player.x = START_X;
       player.y = START_Y;
@@ -99,11 +103,13 @@
   }
 
   function createPlatform() {
+    // Remove platforms that have been passed
     platforms = platforms.filter(function(platform) { 
       if (platform.x + platform.width >= 0) {
         return true;
       }
       score++;
+      document.getElementById('scoreLabel').innerHTML = score;
       return false;
     });
     if (platforms.length > 10) {
@@ -142,5 +148,9 @@
 </script>
 <div>
   Score:
-  <div id="scoreLabel" style="display:inline-block"></div>
+  <div id="scoreLabel" style="display:inline-block">0</div>
+</div>
+<div>
+  High Score:
+  <div id="highScoreLabel" style="display:inline-block">0</div>
 </div>
