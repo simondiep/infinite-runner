@@ -1,6 +1,6 @@
 <script>
   const CANVAS_HEIGHT = 480;
-  const CANVAS_WIDTH  = 1280;
+  const CANVAS_WIDTH  = 1200;
   let context;
   let score = 0;
   let highScore = 0;
@@ -34,8 +34,8 @@
     context = canvas.getContext('2d');
     window.addEventListener('keydown', keydownHandler);
     window.addEventListener('keyup', keyupHandler);
-    window.addEventListener('touchstart', keydownHandler);
-    window.addEventListener('touchend', keyupHandler);
+    window.addEventListener('touchstart', keydownHandler, { passive: false });
+    window.addEventListener('touchend', keyupHandler, { passive: false });
     setInterval(
       () => requestAnimationFrame(update),
       1000/60, // 60 fps
