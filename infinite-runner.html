@@ -149,12 +149,14 @@
   }
 
   function touchdownHandler() {
+    e.preventDefault();
     if (isPlayerOnPlatform()) {
       player.yVelocity = -player.jumpPower;
     }
   }
 
   function touchupHandler() {
+    e.preventDefault();
     // Allow for small or large jumps based on time held
     // Prevents double jumps
     if (player.yVelocity < -player.jumpPower/2) {
