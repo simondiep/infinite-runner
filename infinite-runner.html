@@ -34,8 +34,8 @@
     context = canvas.getContext('2d');
     window.addEventListener('keydown', keydownHandler);
     window.addEventListener('keyup', keyupHandler);
-    window.addEventListener('touchstart', keydownHandler, { passive: false });
-    window.addEventListener('touchend', keyupHandler, { passive: false });
+    window.addEventListener('touchstart', touchdownHandler, { passive: false });
+    window.addEventListener('touchend', touchupHandler, { passive: false });
     setInterval(
       () => requestAnimationFrame(update),
       1000/60, // 60 fps
@@ -145,6 +145,20 @@
           player.yVelocity = -player.jumpPower/2;
           break;
         }
+    }
+  }
+
+  function touchdownHandler() {
+    if (isPlayerOnPlatform()) {
+      player.yVelocity = -player.jumpPower;
+    }
+  }
+
+  function touchupHandler() {
+    // Allow for small or large jumps based on time held
+    // Prevents double jumps
+    if (player.yVelocity < -player.jumpPower/2) {
+      player.yVelocity = -player.jumpPower/2;
     }
   }
 </script>
