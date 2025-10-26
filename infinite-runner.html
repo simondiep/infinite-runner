@@ -1,3 +1,11 @@
+<head>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+    </style>
+</head>
 <script>
   const CANVAS_HEIGHT = 480;
   const CANVAS_WIDTH  = 1200;
@@ -149,14 +157,12 @@
   }
 
   function touchdownHandler() {
-    e.preventDefault();
     if (isPlayerOnPlatform()) {
       player.yVelocity = -player.jumpPower;
     }
   }
 
   function touchupHandler() {
-    e.preventDefault();
     // Allow for small or large jumps based on time held
     // Prevents double jumps
     if (player.yVelocity < -player.jumpPower/2) {
