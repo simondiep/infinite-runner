@@ -1,3 +1,12 @@
+<head>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            user-select: none;
+        }
+    </style>
+</head>
 <script>
   const CANVAS_HEIGHT = 480;
   const CANVAS_WIDTH  = 1200;
@@ -120,9 +129,9 @@
     const lastPlatform = platforms[platforms.length - 1];
     platforms.push({
       x: lastPlatform.x + lastPlatform.width + getRandomNumber(10 * player.jumpPower, 20 * player.jumpPower),
-      y: lastPlatform.y + getRandomNumber(player.jumpPower*(-1), player.jumpPower),
+      y: Math.max(10, lastPlatform.y + getRandomNumber(player.jumpPower*(-1), player.jumpPower)),
       width: getRandomNumber(CANVAS_WIDTH/10, CANVAS_WIDTH),
-      height: 200,
+      height: 400,
     });
   }
 
@@ -166,9 +175,9 @@
 </script>
 <div>
   Score:
-  <div id="scoreLabel" style="display:inline-block">0</div>
+  <div id="scoreLabel" style="display:inline-block;">0</div>
 </div>
 <div>
   High Score:
-  <div id="highScoreLabel" style="display:inline-block">0</div>
+  <div id="highScoreLabel" style="display:inline-block;">0</div>
 </div>
